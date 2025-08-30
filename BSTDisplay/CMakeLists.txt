@@ -1,5 +1,5 @@
 ﻿cmake_minimum_required(VERSION 3.16)
-project(QAppWithMusic LANGUAGES CXX)
+project(BSTDisplay LANGUAGES CXX)
 
 if(MSVC)
     add_compile_options("/utf-8")
@@ -41,7 +41,7 @@ qt_add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
-        WIN32_EXECUTABLE TRUE
+        WIN32_EXECUTABLE False
 )
 
 target_link_libraries(${PROJECT_NAME}

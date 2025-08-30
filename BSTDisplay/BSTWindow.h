@@ -97,6 +97,9 @@ private slots:
     // 树生成相关方法
     void generateRandomTreeWithCount(); // 根据数量生成随机树
     void buildTreeFromValues();         // 根据自定义值构建树
+
+    int  countNodes(TreeNode* node);    //辅助函数,计算节点数目
+
 };
 
 #endif // BSTWINDOW_H

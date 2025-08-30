@@ -47,21 +47,21 @@ BSTView::BSTView(QWidget* parent) :
 ***************************************************************************/
 void BSTView::setTree(BinarySearchTree* tree) {
     if (bst) {
-        disconnect(bst, &BinarySearchTree::treeChanged    , this, &BSTView::onTreeChanged);
-        disconnect(bst, &BinarySearchTree::animationStep  , this, &BSTView::onAnimationStep);
-        disconnect(bst, &BinarySearchTree::highlightNode  , this, &BSTView::onHighlightNode);
+        disconnect(bst, &BinarySearchTree::treeChanged,     this, &BSTView::onTreeChanged);
+        disconnect(bst, &BinarySearchTree::animationStep,   this, &BSTView::onAnimationStep);
+        disconnect(bst, &BinarySearchTree::highlightNode,   this, &BSTView::onHighlightNode);
         disconnect(bst, &BinarySearchTree::clearHighlights, this, &BSTView::onClearHighlights);
-        disconnect(bst, &BinarySearchTree::highlightPath  , this, &BSTView::onHighlightPath);
+        disconnect(bst, &BinarySearchTree::highlightPath,   this, &BSTView::onHighlightPath);
     }
 
     bst = tree;
 
     if (bst) {
-        connect(bst, &BinarySearchTree::treeChanged    , this, &BSTView::onTreeChanged);
-        connect(bst, &BinarySearchTree::animationStep  , this, &BSTView::onAnimationStep);
-        connect(bst, &BinarySearchTree::highlightNode  , this, &BSTView::onHighlightNode);
+        connect(bst, &BinarySearchTree::treeChanged,     this, &BSTView::onTreeChanged);
+        connect(bst, &BinarySearchTree::animationStep,   this, &BSTView::onAnimationStep);
+        connect(bst, &BinarySearchTree::highlightNode,   this, &BSTView::onHighlightNode);
         connect(bst, &BinarySearchTree::clearHighlights, this, &BSTView::onClearHighlights);
-        connect(bst, &BinarySearchTree::highlightPath  , this, &BSTView::onHighlightPath);
+        connect(bst, &BinarySearchTree::highlightPath,   this, &BSTView::onHighlightPath);
     }
 
     calculatePositions();
@@ -93,12 +93,12 @@ void BSTView::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
-    // 设置背景色
-    painter.fillRect(rect(), QColor(240, 240, 240));
+    /* 设置背景色为黑色*/
+    painter.fillRect(rect(), Qt::black);
 
-    // 显示当前动画步骤
+    // 显示当前动画步骤 - 改为白色文字
     if (!currentAnimationStep.isEmpty()) {
-        painter.setPen(Qt::black);
+        painter.setPen(Qt::white);
         QFont font = painter.font();
         font.setPointSize(12);
         painter.setFont(font);
@@ -106,6 +106,7 @@ void BSTView::paintEvent(QPaintEvent* event) {
     }
 
     if (!bst || bst->isEmpty()) {
+        painter.setPen(Qt::white);
         painter.drawText(rect(), Qt::AlignCenter, QString::fromUtf8("树为空"));
         return;
     }
@@ -461,6 +462,7 @@ int BSTView::getTreeDepth(TreeNode* node) {
   返 回 值：
   说    明：绘制树的所有节点和连接线，包括高亮效果
 ***************************************************************************/
+
 void BSTView::drawTree(QPainter* painter) {
     // 先绘制所有连接线
     for (const NodePosition& pos : nodePositions) {
@@ -470,7 +472,7 @@ void BSTView::drawTree(QPainter* painter) {
         if (node->left) {
             auto leftIt = std::find_if(nodePositions.begin(), nodePositions.end(),
                 [node](const NodePosition& np) {
-                    return np.node == node->left; 
+                    return np.node == node->left;
                 });
 
             if (leftIt != nodePositions.end()) {
@@ -478,10 +480,10 @@ void BSTView::drawTree(QPainter* painter) {
                 bool isHighlighted = isConnectionHighlighted(node->value, node->left->value);
 
                 if (isHighlighted) {
-                    painter->setPen(QPen(Qt::red     , 3, Qt::SolidLine, Qt::RoundCap));
+                    painter->setPen(QPen(QColor(0, 255, 255), 3, Qt::SolidLine, Qt::RoundCap)); // 青色高亮
                 }
                 else {
-                    painter->setPen(QPen(Qt::darkGray, 2, Qt::SolidLine, Qt::RoundCap));
+                    painter->setPen(QPen(QColor(100, 100, 100), 2, Qt::SolidLine, Qt::RoundCap)); // 灰色
                 }
 
                 // 绘制直线
@@ -493,8 +495,8 @@ void BSTView::drawTree(QPainter* painter) {
         // 绘制右子节点连接线
         if (node->right) {
             auto rightIt = std::find_if(nodePositions.begin(), nodePositions.end(),
-                [node](const NodePosition& np) { 
-                    return np.node == node->right; 
+                [node](const NodePosition& np) {
+                    return np.node == node->right;
                 });
 
             if (rightIt != nodePositions.end()) {
@@ -502,10 +504,10 @@ void BSTView::drawTree(QPainter* painter) {
                 bool isHighlighted = isConnectionHighlighted(node->value, node->right->value);
 
                 if (isHighlighted) {
-                    painter->setPen(QPen(Qt::red     , 3, Qt::SolidLine, Qt::RoundCap));
+                    painter->setPen(QPen(QColor(0, 255, 255), 3, Qt::SolidLine, Qt::RoundCap)); // 青色高亮
                 }
                 else {
-                    painter->setPen(QPen(Qt::darkGray, 2, Qt::SolidLine, Qt::RoundCap));
+                    painter->setPen(QPen(QColor(100, 100, 100), 2, Qt::SolidLine, Qt::RoundCap)); // 灰色
                 }
 
                 // 绘制直线
@@ -518,13 +520,13 @@ void BSTView::drawTree(QPainter* painter) {
     // 绘制所有节点
     for (const NodePosition& pos : nodePositions) {
         // 绘制节点圆形
-        QPen pen(Qt::black, 2);
+        QPen pen(Qt::white, 2);
         painter->setPen(pen);
 
-        // 根据节点深度选择颜色
+        // 根据节点深度选择颜色 - 使用更亮的颜色以适应黑色背景
         int depth = pos.node->depth;
         int hue = (depth * 30) % 360;
-        QColor nodeColor = QColor::fromHsv(hue, 150, 230);
+        QColor nodeColor = QColor::fromHsv(hue, 200, 255); // 增加饱和度和亮度
 
         // 如果是高亮节点，使用不同的颜色
         if (pos.node->value == highlightedValue || highlightedPath.contains(pos.node->value)) {
@@ -536,7 +538,7 @@ void BSTView::drawTree(QPainter* painter) {
 
         painter->drawEllipse(pos.x - pos.size / 2, pos.y - pos.size / 2, pos.size, pos.size);
 
-        // 绘制节点值
+        // 绘制节点值 - 使用黑色文字
         painter->setPen(Qt::black);
         QFont font = painter->font();
         font.setPointSize(pos.size / 3);
@@ -545,8 +547,8 @@ void BSTView::drawTree(QPainter* painter) {
         painter->drawText(QRect(pos.x - pos.size / 2, pos.y - pos.size / 2, pos.size, pos.size),
             Qt::AlignCenter, QString::number(pos.node->value));
 
-        // 绘制节点深度
-        painter->setPen(Qt::darkGray);
+        // 绘制节点深度 - 使用浅灰色文字
+        painter->setPen(QColor(200, 200, 200));
         font.setPointSize(pos.size / 5);
         font.setBold(false);
         painter->setFont(font);
